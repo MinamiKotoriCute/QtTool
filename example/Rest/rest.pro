@@ -28,4 +28,4 @@ HEADERS += \
     myuser.h \
     mygameserver.h
 
-include(../../tool/WebSocketServer/websocketserver.pri)
+include(../../tool/rest/rest.pri)
