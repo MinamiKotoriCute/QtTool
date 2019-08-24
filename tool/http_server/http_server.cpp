@@ -1,11 +1,11 @@
-#include "httpserver.h"
+#include "http_server.h"
 
 #include <QTcpServer>
 #include <QTcpSocket>
-#include "httpconnection.h"
 
-#include "httpresponse.h"
-#include "httprequest.h"
+#include "http_connection.h"
+#include "http_response.h"
+#include "http_request.h"
 
 HttpServer::HttpServer(QTcpServer *qtcp_server, QObject *parent) :
     QObject(parent),

@@ -1,4 +1,4 @@
-#include "httpresponse.h"
+#include "http_response.h"
 
 HttpResponse::HttpResponse(QObject *parent) : QObject(parent)
 {

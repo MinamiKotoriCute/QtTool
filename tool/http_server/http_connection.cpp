@@ -1,4 +1,4 @@
-#include "httpconnection.h"
+#include "http_connection.h"
 
 #include <QTcpSocket>
 #include <QUrl>

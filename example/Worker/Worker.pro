@@ -28,5 +28,5 @@ HEADERS += \
     myuser.h \
     mygameserver.h
 
-include(../../tool/WebSocketServer/websocketserver.pri)
-include(../../tool/Worker/worker.pri)
+include(../../tool/websocket_server/websocket_server.pri)
+include(../../tool/worker/worker.pri)

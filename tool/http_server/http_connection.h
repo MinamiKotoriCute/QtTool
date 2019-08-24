@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "httprequest.h"
+#include "http_request.h"
 
 class QTcpSocket;
 

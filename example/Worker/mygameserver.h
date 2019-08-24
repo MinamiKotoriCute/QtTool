@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "websocketserver.h"
+#include "websocket_server.h"
 
 class MyGameServer : public WebSocketServer
 {

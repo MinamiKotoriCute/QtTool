@@ -5,9 +5,9 @@ CurrentPath = $$PWD
 INCLUDEPATH += $$CurrentPath
 
 SOURCES += \
-    $$CurrentPath/websocketserver.cpp \
+    $$CurrentPath/websocket_server.cpp \
     $$CurrentPath/websocket.cpp
 
 HEADERS += \
-    $$CurrentPath/websocketserver.h \
+    $$CurrentPath/websocket_server.h \
     $$CurrentPath/websocket.h

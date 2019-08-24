@@ -3,9 +3,9 @@
 #include <QThread>
 #include <QTimer>
 
-#include "httpserver.h"
-#include "httpconnection.h"
-#include "httpresponse.h"
+#include "http_server.h"
+#include "http_connection.h"
+#include "http_response.h"
 #include "worker.h"
 
 /*
