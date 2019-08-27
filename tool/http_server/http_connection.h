@@ -13,8 +13,10 @@ class HttpConnection : public QObject
 public:
     explicit HttpConnection(QTcpSocket *qtcp_socket, QObject *parent = nullptr);
 
+    const HttpRequest &http_request();
+
 signals:
-    void OnRequest(const HttpRequest &http_request);
+    void OnRequest();
 
 public slots:
     void Write(QByteArray data);

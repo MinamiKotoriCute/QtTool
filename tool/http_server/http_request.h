@@ -14,11 +14,11 @@ public:
 
     bool Parser(QByteArray request_packet);
 
-    QString method(){return method_;}
-    QString subpath(){return subpath_;}
-    QString http_version(){return http_version_;}
-    QByteArray request_body(){return request_body_;}
-    const QMap<QString,QString>& header_group(){return header_group_;}
+    QString method() const {return method_;}
+    QString subpath() const {return subpath_;}
+    QString http_version() const {return http_version_;}
+    QByteArray request_body() const {return request_body_;}
+    const QMap<QString,QString>& header_group() const {return header_group_;}
 
 private:
     QString method_;

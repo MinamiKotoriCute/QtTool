@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     HttpServer s;
     QObject::connect(&s, &HttpServer::OnCreatedConnection, &worker, &Worker::MoveToThread);
     QObject::connect(&s, &HttpServer::OnCreatedConnection, [](HttpConnection *http_connection){
-        QObject::connect(http_connection, &HttpConnection::OnRequest, [=](const HttpRequest &){
+        QObject::connect(http_connection, &HttpConnection::OnRequest, [=](){
             HttpResponse http_response;
             http_response.EasyText("hello");
             http_connection->Write(http_response.Data());

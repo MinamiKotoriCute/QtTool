@@ -6,31 +6,23 @@
 #include <QVector>
 #include <QList>
 
-class QThread;
+class HttpServer;
 
-class Worker : public QObject
+class RestfulApiServer : public QObject
 {
     Q_OBJECT
-    struct ThreadData
-    {
-        QThread *thread;
-        QList<QObject *> object_group;
-    };
 
 public:
-    explicit Worker(int max_thread_number = 1, QObject *parent = nullptr);
-    ~Worker();
+    explicit RestfulApiServer(HttpServer *http_server = nullptr, QObject *parent = nullptr);
+    ~RestfulApiServer();
 
 
 signals:
 
 public slots:
-    void MoveToThread(QObject *object);
 
 private:
-    ThreadData& FindLeastObjectThreadData();
-
-    QVector<ThreadData> thread_data_group_;
+    HttpServer *http_server_;
 };
 
 #endif // WORKER_H

@@ -1,3 +1,5 @@
+!http_server {
+CONFIG += http_server
 QT += network
 
 CurrentPath = $$PWD
@@ -15,3 +17,4 @@ HEADERS += \
     $$PWD/http_connection.h \
     $$PWD/http_request.h \
     $$PWD/http_response.h
+}

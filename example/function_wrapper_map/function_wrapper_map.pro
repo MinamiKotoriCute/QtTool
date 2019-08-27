@@ -28,4 +28,4 @@ HEADERS += \
     myuser.h \
     mygameserver.h
 
-include(../../tool/restful_api_server/restful_api_server.pri)
+include(../../tool/function_wrapper_map/function_wrapper_map.pri)

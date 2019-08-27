@@ -1,3 +1,5 @@
+!restful_api_server {
+CONFIG += restful_api_server
 QT += network
 
 CurrentPath = $$PWD
@@ -5,7 +7,10 @@ CurrentPath = $$PWD
 INCLUDEPATH += $$CurrentPath
 
 SOURCES += \
-    $$CurrentPath/rest.cpp
+    $$CurrentPath/restful_api_server.cpp
 
 HEADERS += \
-    $$CurrentPath/rest.h
+    $$CurrentPath/restful_api_server.h
+
+include(../../tool/http_server/http_server.pri)
+}

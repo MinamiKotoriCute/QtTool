@@ -16,6 +16,11 @@ HttpConnection::HttpConnection(QTcpSocket *qtcp_socket, QObject *parent) :
     connect(qtcp_socket_, &QTcpSocket::disconnected, qtcp_socket_, &QTcpSocket::deleteLater);
 }
 
+const HttpRequest &HttpConnection::http_request()
+{
+    return http_request_;
+}
+
 void HttpConnection::Write(QByteArray data)
 {
     if(totalWriteSize >= 0)
@@ -32,7 +37,7 @@ void HttpConnection::OnReadyRead()
     QByteArray request_packet = qtcp_socket_->readAll();
 
     if(http_request_.Parser(request_packet))
-        emit OnRequest(http_request_);
+        emit OnRequest();
     else {
         QTimer::singleShot(0, qtcp_socket_, [=]{
             qtcp_socket_->disconnectFromHost();

@@ -1,44 +1,13 @@
-#include "worker.h"
+#include "restful_api_server.h"
 
-#include <QThread>
+#include "http_server.h"
+#include "http_connection.h"
 
-Worker::Worker(int max_thread_number, QObject *parent) : QObject (parent)
+RestfulApiServer::RestfulApiServer(HttpServer *http_server, QObject *parent) :
+    QObject (parent),
+    http_server_(http_server ? http_server : new HttpServer(nullptr ,this))
 {
-    for(int i=0;i<max_thread_number;++i) {
-        QThread *thread = new QThread;
-        thread->start();
-        thread_data_group_.append({thread, {}});
-    }
-}
-
-Worker::~Worker()
-{
-    while(!thread_data_group_.empty()) {
-        auto &thread_data = thread_data_group_.first();
-        thread_data.thread->quit();
-        thread_data.thread->deleteLater();
-
-        thread_data_group_.removeFirst();
-    }
-}
-
-void Worker::MoveToThread(QObject *object)
-{
-    auto &thread_data = FindLeastObjectThreadData();
-    thread_data.object_group.append(object);
-    object->moveToThread(thread_data.thread);
-    connect(object, &QObject::destroyed, this, [object, &thread_data]{
-        thread_data.object_group.removeOne(object);
+    connect(http_server_, &HttpServer::OnCreatedConnection, this, [](HttpConnection *http_connection){
+        connect(http_connection, &HttpConnection::OnRequest,
     });
-}
-
-Worker::ThreadData &Worker::FindLeastObjectThreadData()
-{
-    ThreadData *thread_data = &thread_data_group_.first();
-    for(int i=1;i<thread_data_group_.size();++i) {
-        if(thread_data->object_group.size() > thread_data_group_[i].object_group.size()) {
-            thread_data = &thread_data_group_[i];
-        }
-    }
-    return *thread_data;
 }
