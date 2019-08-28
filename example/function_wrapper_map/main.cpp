@@ -2,21 +2,22 @@
 #include <QDebug>
 #include <QThread>
 
-#include "mygameserver.h"
-#include "myuser.h"
-#include "worker.h"
+#include "function_wrapper_map.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    Worker worker(4);
+    FunctionWrapperMap f;
+    f.regist("asd", []{
+        qDebug("Asd");
+    });
+    f.regist("QQ", [](int aa){
+        qDebug("QQ %d", aa);
+    });
 
-    MyGameServer ws;
-    QObject::connect(&ws, &WebSocketServer::OnCreatedWebSocket, &worker, &Worker::MoveToThread);
-    ws.Bind<MyUser>(R"##(\/123)##").Listen(33333);
-
-    qDebug() << QThread::currentThreadId() << __FUNCTION__;
+    f.call({"asd"});
+    f.call({QString("QQ"), "156"});
 
     return a.exec();
 }

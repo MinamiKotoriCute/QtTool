@@ -13,6 +13,6 @@ SOURCES += \
 HEADERS += \
     $$CurrentPath/command_line.h
 
-include(../../tool/command_line/command_line.pri)
+include(../../tool/function_wrapper_map/function_wrapper_map.pri)
 
 }
