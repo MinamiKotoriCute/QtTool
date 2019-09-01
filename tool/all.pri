@@ -1,11 +1,6 @@
-QT += websockets
+!qt_tool_all{
+CONFIG += qt_tool_all
 
-CurrentPath = $$PWD
+include($$PWD)
 
-INCLUDEPATH += $$CurrentPath
-
-SOURCES += \
-    $$CurrentPath/worker.cpp
-
-HEADERS += \
-    $$CurrentPath/worker.h
+}
