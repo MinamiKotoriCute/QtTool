@@ -2,20 +2,32 @@
 #include <QDebug>
 #include <QThread>
 
-#include "mygameserver.h"
-#include "myuser.h"
+#include "command_line.h"
+
+class Hello : public Command
+{
+public:
+    Hello() : Command("Hello") {
+        Regist("i", i);
+    }
+
+    void Run() override {
+        qDebug("Heeeeeeeeeeelo");
+    }
+
+private:
+    int i;
+};
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    Worker worker(4);
 
-    MyGameServer ws;
-    QObject::connect(&ws, &WebSocketServer::OnCreatedWebSocket, &worker, &Worker::MoveToThread);
-    ws.Bind<MyUser>(R"##(\/123)##").Listen(33333);
+    CommandLine c;
+    c.Regist<Hello>("hello");
 
-    qDebug() << QThread::currentThreadId() << __FUNCTION__;
+    c.start();
 
     return a.exec();
 }

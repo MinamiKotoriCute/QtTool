@@ -1,44 +1,62 @@
-#include "worker.h"
+#include "command_line.h"
 
-#include <QThread>
+#include <QTextStream>
+#include <QDebug>
 
-Worker::Worker(int max_thread_number, QObject *parent) : QObject (parent)
+CommandLine::CommandLine(QObject *parent) :
+    QThread (parent),
+    read_line_(std::make_unique<AutoCompleteReadLine>())
 {
-    for(int i=0;i<max_thread_number;++i) {
-        QThread *thread = new QThread;
-        thread->start();
-        thread_data_group_.append({thread, {}});
-    }
+
 }
 
-Worker::~Worker()
+std::unique_ptr<AutoCompleteReadLine> CommandLine::set_read_line(std::unique_ptr<AutoCompleteReadLine> read_line)
 {
-    while(!thread_data_group_.empty()) {
-        auto &thread_data = thread_data_group_.first();
-        thread_data.thread->quit();
-        thread_data.thread->deleteLater();
-
-        thread_data_group_.removeFirst();
-    }
+    auto old_read_line = std::move(read_line_);
+    read_line_ = std::move(read_line);
+    return old_read_line;
 }
 
-void Worker::MoveToThread(QObject *object)
+void CommandLine::run()
 {
-    auto &thread_data = FindLeastObjectThreadData();
-    thread_data.object_group.append(object);
-    object->moveToThread(thread_data.thread);
-    connect(object, &QObject::destroyed, this, [object, &thread_data]{
-        thread_data.object_group.removeOne(object);
-    });
-}
-
-Worker::ThreadData &Worker::FindLeastObjectThreadData()
-{
-    ThreadData *thread_data = &thread_data_group_.first();
-    for(int i=1;i<thread_data_group_.size();++i) {
-        if(thread_data->object_group.size() > thread_data_group_[i].object_group.size()) {
-            thread_data = &thread_data_group_[i];
+    for(;;) {
+        try {
+            ProcessOneCommand();
+        } catch (std::exception &ex) {
+            qWarning() << ex.what();
+        } catch (...) {
+            qWarning() << "Capture unknow exception";
         }
     }
-    return *thread_data;
 }
+
+void CommandLine::UpdateAutoCompleteHandler()
+{
+    read_line_->OnAutoCompleteHandler = [](QString text, int index) -> QStringList {
+
+        return {};
+    };
+}
+
+void CommandLine::ProcessOneCommand()
+{
+    auto read_text = read_line_->ReadLine();
+
+    QString command_name;
+    QString command_parameter;
+    auto index = read_text.indexOf(' ');
+    if(index == -1)
+        command_name = read_text;
+    else {
+        command_name = read_text.left(index);
+        command_parameter = read_text.mid(index+1);
+    }
+
+    auto command_it = command_group_.find(command_name);
+    if(command_it == command_group_.end())
+        throw std::exception("command not find");
+
+    auto command = (*command_it)();
+    command->ParserAndExcuttion(command_parameter);
+}
+

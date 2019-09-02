@@ -11,11 +11,12 @@
 template<typename Parameter,
          template<typename> typename ParameterTransform,
          typename Key = Parameter,
-         typename Container = std::vector<Parameter>>
+         typename ParameterContainer = std::vector<Parameter>,
+         typename KeyContainer = std::vector<Key>>
 class basic_FunctionWrapperMap
 {
 public:
-    using parameter_container = Container;
+    using parameter_container = ParameterContainer;
     using parameter_iterator = typename parameter_container::iterator;
     using parameter_const_iterator = typename parameter_container::const_iterator;
 
@@ -135,6 +136,14 @@ public:
         return true;
     }
 
+    KeyContainer GetKeyGroup() const {
+        KeyContainer c;
+        for(const auto &p : container) {
+            c.push_back(p.first);
+        }
+        return c;
+    }
+
 protected:
     std::map<Key, FunctionData> container;
 };
@@ -159,5 +168,5 @@ struct ParameterTransform
     }
 };
 
-using FunctionWrapperMap = basic_FunctionWrapperMap<QString, ParameterTransform, QString, QVector<QString>>;
+using FunctionWrapperMap = basic_FunctionWrapperMap<QString, ParameterTransform, QString, QVector<QString>, QVector<QString>>;
 

@@ -19,5 +19,7 @@ int main(int argc, char *argv[])
     f.call({"asd"});
     f.call({QString("QQ"), "156"});
 
+    qDebug() << "Keys:" << f.GetKeyGroup();
+
     return a.exec();
 }

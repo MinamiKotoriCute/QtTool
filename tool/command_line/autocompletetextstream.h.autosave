@@ -1,0 +1,14 @@
+#ifndef AUTOCOMPLETETEXTSTREAM_H
+#define AUTOCOMPLETETEXTSTREAM_H
+
+#include <QObject>
+#include <QTextStream>
+
+class AutoCompleteTextStream : public QTextStream
+{
+    Q_OBJECT
+public:
+    AutoCompleteTextStream& operator>>(QString &st)
+};
+
+#endif // AUTOCOMPLETETEXTSTREAM_H

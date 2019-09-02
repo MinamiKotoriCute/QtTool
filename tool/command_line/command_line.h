@@ -2,35 +2,42 @@
 #define WORKER_H
 
 #include <functional>
-#include <QObject>
+#include <memory>
+
+#include <QThread>
 #include <QVector>
 #include <QList>
 
-class QThread;
+#include "command.h"
+#include "auto_complete_read_line.h"
 
-class Worker : public QObject
+class CommandLine : public QThread
 {
     Q_OBJECT
-    struct ThreadData
-    {
-        QThread *thread;
-        QList<QObject *> object_group;
-    };
 
 public:
-    explicit Worker(int max_thread_number = 1, QObject *parent = nullptr);
-    ~Worker();
+    explicit CommandLine(QObject *parent = nullptr);
 
+    std::unique_ptr<AutoCompleteReadLine> set_read_line(std::unique_ptr<AutoCompleteReadLine> read_line);
+
+    template<typename T>
+    void Regist(QString command_name) {
+        command_group_.insert(command_name, []{return std::make_unique<T>();});
+    }
 
 signals:
 
 public slots:
-    void MoveToThread(QObject *object);
+
+protected:
+    void run() override;
 
 private:
-    ThreadData& FindLeastObjectThreadData();
+    void UpdateAutoCompleteHandler();
+    void ProcessOneCommand();
 
-    QVector<ThreadData> thread_data_group_;
+    QMap<QString, std::function<std::unique_ptr<Command>()>> command_group_;
+    std::unique_ptr<AutoCompleteReadLine> read_line_;
 };
 
 #endif // WORKER_H
