@@ -3,6 +3,7 @@
 #include <QRegularExpression>
 #include <QWebSocketServer>
 #include <QWebSocket>
+#include <QDebug>
 
 #include "websocket.h"
 
@@ -59,6 +60,7 @@ WebSocket *WebSocketServer::CreateWebSocket(QWebSocket *qweb_socket)
         }
     }
 
+    qWarning() << "not find bind url=%s" << path;
     return nullptr;
 }
 
