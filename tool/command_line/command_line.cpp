@@ -1,11 +1,13 @@
 #include "command_line.h"
 
+#include <iostream>
 #include <QTextStream>
 #include <QDebug>
 
 CommandLine::CommandLine(QObject *parent) :
     QThread (parent),
-    read_line_(std::make_unique<AutoCompleteReadLine>())
+    read_line_(std::make_unique<AutoCompleteReadLine>()),
+    prefix_("> ")
 {
 
 }
@@ -17,10 +19,21 @@ std::unique_ptr<AutoCompleteReadLine> CommandLine::set_read_line(std::unique_ptr
     return old_read_line;
 }
 
+QString CommandLine::prefix() const
+{
+    return prefix_;
+}
+
+void CommandLine::set_prefix(QString prefix)
+{
+    prefix_ = prefix;
+}
+
 void CommandLine::run()
 {
     for(;;) {
         try {
+            std::cout << qPrintable(prefix_);
             ProcessOneCommand();
         } catch (std::exception &ex) {
             qWarning() << ex.what();
@@ -33,7 +46,7 @@ void CommandLine::run()
 void CommandLine::UpdateAutoCompleteHandler()
 {
     read_line_->OnAutoCompleteHandler = [](QString text, int index) -> QStringList {
-
+        qDebug("want auto");
         return {};
     };
 }

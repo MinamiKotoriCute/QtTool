@@ -2,7 +2,7 @@
 
 #include <QTextStream>
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(USED_DEFAULT_READLINE)
 #include <Windows.h>
 #undef max
 #undef min
@@ -19,9 +19,10 @@ QString AutoCompleteReadLine::ReadLine()
     QTextStream text_stream(stdin);
     return text_stream.readLine();
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(USED_DEFAULT_READLINE)
 
 #else
-    return {};
+    QTextStream text_stream(stdin);
+    return text_stream.readLine();
 #endif
 }

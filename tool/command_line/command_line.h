@@ -25,6 +25,9 @@ public:
         command_group_.insert(command_name, []{return std::make_unique<T>();});
     }
 
+    QString prefix() const;
+    void set_prefix(QString prefix);
+
 signals:
 
 public slots:
@@ -38,6 +41,7 @@ private:
 
     QMap<QString, std::function<std::unique_ptr<Command>()>> command_group_;
     std::unique_ptr<AutoCompleteReadLine> read_line_;
+    QString prefix_;
 };
 
 #endif // WORKER_H
