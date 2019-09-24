@@ -21,6 +21,7 @@ public:
     explicit Worker(int max_thread_number = 1, QObject *parent = nullptr);
     ~Worker();
 
+    int ThreadNumber() const;
 
 signals:
 

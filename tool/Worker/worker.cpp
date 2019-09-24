@@ -22,6 +22,11 @@ Worker::~Worker()
     }
 }
 
+int Worker::ThreadNumber() const
+{
+    return thread_data_group_.size();
+}
+
 void Worker::MoveToThread(QObject *object)
 {
     auto &thread_data = FindLeastObjectThreadData();
