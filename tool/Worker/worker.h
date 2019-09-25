@@ -23,10 +23,16 @@ public:
 
     int ThreadNumber() const;
 
+    void Start(int thread_number);
+    void StartWait(int thread_number);
+    void Stop();
+    void StopWait();
+
 signals:
 
 public slots:
     void MoveToThread(QObject *object);
+    void MoveToSpecificThread(int thread_index, QObject *object);
 
 private:
     ThreadData& FindLeastObjectThreadData();

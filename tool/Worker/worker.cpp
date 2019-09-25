@@ -1,25 +1,15 @@
 #include "worker.h"
 
 #include <QThread>
+#include <QEventLoop>
 
 Worker::Worker(int max_thread_number, QObject *parent) : QObject (parent)
 {
-    for(int i=0;i<max_thread_number;++i) {
-        QThread *thread = new QThread;
-        thread->start();
-        thread_data_group_.append({thread, {}});
-    }
 }
 
 Worker::~Worker()
 {
-    while(!thread_data_group_.empty()) {
-        auto &thread_data = thread_data_group_.first();
-        thread_data.thread->quit();
-        thread_data.thread->deleteLater();
-
-        thread_data_group_.removeFirst();
-    }
+    Stop();
 }
 
 int Worker::ThreadNumber() const
@@ -27,9 +17,83 @@ int Worker::ThreadNumber() const
     return thread_data_group_.size();
 }
 
+void Worker::Start(int thread_number)
+{
+    StopWait();
+
+    for(int i=0;i<thread_number;++i) {
+        QThread *thread = new QThread;
+        thread->start();
+        thread_data_group_.append({thread, {}});
+    }
+}
+
+void Worker::StartWait(int thread_number)
+{
+    StopWait();
+
+    QEventLoop qevent_loop;
+    int remaining_starting_thread_number = thread_number;
+    for(int i=0;i<thread_number;++i) {
+        QThread *thread = new QThread;
+        connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+        connect(thread, &QThread::started, this, [&remaining_starting_thread_number, &qevent_loop]{
+            if(--remaining_starting_thread_number == 0)
+                qevent_loop.quit();
+        });
+        thread->start();
+        thread_data_group_.append({thread, {}});
+    }
+    qevent_loop.exec();
+}
+
+void Worker::Stop()
+{
+    while(!thread_data_group_.empty()) {
+        auto &thread_data = thread_data_group_.last();
+        for(auto &object : thread_data.object_group) {
+            connect(object, &QObject::destroyed, this, [object, &thread_data]{
+                thread_data.object_group.removeOne(object);
+            });
+            o->deleteLater();
+        }
+        thread_data.thread->quit();
+
+        thread_data_group_.removeLast();
+    }
+}
+
+void Worker::StopWait()
+{
+    QEventLoop qevent_loop;
+    int remaining_stoping_thread_number = thread_data_group_.size();
+    for(int i=0;i<thread_number;++i) {
+        QThread *thread = new QThread;
+        connect(thread, &QThread::started, this, [&remaining_starting_thread_number, &qevent_loop]{
+            if(--remaining_starting_thread_number == 0)
+                qevent_loop.quit();
+        });
+        thread->start();
+        thread_data_group_.append({thread, {}});
+    }
+}
+
 void Worker::MoveToThread(QObject *object)
 {
     auto &thread_data = FindLeastObjectThreadData();
+    thread_data.object_group.append(object);
+    object->moveToThread(thread_data.thread);
+    connect(object, &QObject::destroyed, this, [object, &thread_data]{
+        thread_data.object_group.removeOne(object);
+    });
+}
+
+void Worker::MoveToSpecificThread(int thread_index, QObject *object)
+{
+    if(thread_index < 0 || thread_index >=ThreadNumber())
+        throw std::out_of_range("Worker thread index out of range");
+
+    auto &thread_data = thread_data_group_[thread_index];
     thread_data.object_group.append(object);
     object->moveToThread(thread_data.thread);
     connect(object, &QObject::destroyed, this, [object, &thread_data]{
