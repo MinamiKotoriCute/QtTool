@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
     /// test 2
     qDebug() << QThread::currentThreadId() << __FUNCTION__;
     int thread_number = 4;
-    Worker worker(thread_number);
+    Worker worker;
+    worker.StartWait(thread_number);
     for(int i=0;i<thread_number;++i) {
         QObject *o = new QObject;
         QObject::connect(o, &QObject::destroyed, []{qDebug() << QThread::currentThreadId() << "QObject::destroyed";});
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
 
     QTimer::singleShot(3000, &worker, [&worker]{
         qDebug() << "stoping";
-        worker.Stop();
+        worker.StopWait();
         qDebug() << "stoped";
     });
     /// test 2 emd

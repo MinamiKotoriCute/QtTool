@@ -2,8 +2,9 @@
 
 #include <QThread>
 #include <QEventLoop>
+#include <QDebug>
 
-Worker::Worker(int max_thread_number, QObject *parent) : QObject (parent)
+Worker::Worker(QObject *parent) : QObject (parent)
 {
 }
 
@@ -23,6 +24,7 @@ void Worker::Start(int thread_number)
 
     for(int i=0;i<thread_number;++i) {
         QThread *thread = new QThread;
+        connect(thread, &QThread::finished, thread, &QThread::deleteLater);
         thread->start();
         thread_data_group_.append({thread, {}});
     }
@@ -55,7 +57,7 @@ void Worker::Stop()
             connect(object, &QObject::destroyed, this, [object, &thread_data]{
                 thread_data.object_group.removeOne(object);
             });
-            o->deleteLater();
+            object->deleteLater();
         }
         thread_data.thread->quit();
 
@@ -65,17 +67,27 @@ void Worker::Stop()
 
 void Worker::StopWait()
 {
+    if(thread_data_group_.isEmpty())
+        return;
+
     QEventLoop qevent_loop;
     int remaining_stoping_thread_number = thread_data_group_.size();
-    for(int i=0;i<thread_number;++i) {
-        QThread *thread = new QThread;
-        connect(thread, &QThread::started, this, [&remaining_starting_thread_number, &qevent_loop]{
-            if(--remaining_starting_thread_number == 0)
+    while(!thread_data_group_.empty()) {
+        auto &thread_data = thread_data_group_.last();
+        for(auto &object : thread_data.object_group) {
+            connect(object, &QObject::destroyed, this, [object, &thread_data]{
+                thread_data.object_group.removeOne(object);
+            });
+            object->deleteLater();
+        }
+        connect(thread_data.thread, &QThread::finished, this, [&remaining_stoping_thread_number, &qevent_loop]{
+            if(--remaining_stoping_thread_number == 0)
                 qevent_loop.quit();
         });
-        thread->start();
-        thread_data_group_.append({thread, {}});
+        thread_data.thread->quit();
+        thread_data_group_.removeLast();
     }
+    qevent_loop.exec();
 }
 
 void Worker::MoveToThread(QObject *object)

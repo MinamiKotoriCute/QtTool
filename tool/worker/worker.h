@@ -18,10 +18,11 @@ class Worker : public QObject
     };
 
 public:
-    explicit Worker(int max_thread_number = 1, QObject *parent = nullptr);
+    explicit Worker(QObject *parent = nullptr);
     ~Worker();
 
     int ThreadNumber() const;
+    bool IsRunning() const;
 
     void Start(int thread_number);
     void StartWait(int thread_number);
