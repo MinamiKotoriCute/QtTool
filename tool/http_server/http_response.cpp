@@ -13,6 +13,14 @@ void HttpResponse::EasyText(QByteArray data)
     header_group_["Content-Length"] = QString::number(data.size());
 }
 
+void HttpResponse::EasyJson(QByteArray data)
+{
+    body_ = data;
+    status_code_ = "200 OK";
+    header_group_["Content-Type"] = "application/json";
+    header_group_["Content-Length"] = QString::number(data.size());
+}
+
 void HttpResponse::EasyNotFound(QByteArray data)
 {
     body_ = data;

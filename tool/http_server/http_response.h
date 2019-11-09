@@ -11,6 +11,7 @@ public:
     explicit HttpResponse(QObject *parent = nullptr);
 
     void EasyText(QByteArray data);
+    void EasyJson(QByteArray data);
     void EasyNotFound(QByteArray data);
 
     QMap<QString,QString>& header_group(){return header_group_;}
