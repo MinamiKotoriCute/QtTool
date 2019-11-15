@@ -14,6 +14,8 @@ public:
     void EasyJson(QByteArray data);
     void EasyNotFound(QByteArray data);
 
+    void SetAccessControlAll();
+
     QMap<QString,QString>& header_group(){return header_group_;}
 
     QByteArray Data() const;

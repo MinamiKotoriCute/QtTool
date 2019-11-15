@@ -29,6 +29,11 @@ void HttpResponse::EasyNotFound(QByteArray data)
     header_group_["Content-Length"] = QString::number(data.size());
 }
 
+void HttpResponse::SetAccessControlAll()
+{
+    header_group_["Access-Control-Allow-Origin"] = "*";
+}
+
 QByteArray HttpResponse::Data() const
 {
     QByteArray data;
